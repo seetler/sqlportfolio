@@ -1,26 +1,31 @@
 /*
-This code selects the number of pokemons with a certain type in the first generation.
+This code finds the number of pokemons with a certain type in the first generation only. We chose to only analyze the first generation, mainly because I'm unfamiliar with the remaining generations of pokemons.
 
-We used an algorithmic count, because if a Pokemon has two types such as Charizard, should it be counted once as fire and once as flying? In the end, I settled on including an algorithmic count which counts split pokemons as half per type.
+We included an Algorithmic Count, because if a Pokemon has two types such as Charizard, it would be counted once as fire and once as flying. Thus, we half the count of any pokemon with two types.
 
-Types       Algorithm Count  Natural Count  Pures       Mudbloods 
-----------  ---------------  -------------  ----------  ----------
-Normal      20.0             24             16          8         
-Fighting    7.5              8              7           1         
-Flying      9.5              19             0           19        
-Poison      21.5             33             10          23        
-Ground      10.0             14             6           8         
-Rock        5.5              11             0           11        
-Bug         7.5              12             3           9         
-Ghost       1.5              3              0           3         
-Steel       1.0              2              0           2         
-Fire        11.0             12             10          2         
-Water       25.0             32             18          14        
-Grass       7.5              14             1           13        
-Electric    7.5              9              6           3         
-Psychic     11.0             14             8           6         
-Ice         2.5              5              0           5         
-Dragon      2.5              3              2           1 
+The Natural Count counts pokemons with two or more types in both of its type categories.
+
+The percentages of homogeneity and heterogeneity are based on the Natural Count.
+
+
+Types       Algorithm Count  Natural Count  Homogeneous Percentage  Heterogeneous Percentage
+----------  ---------------  -------------  ----------------------  ------------------------
+Water       25.0             32             56                      43                      
+Poison      21.5             33             30                      69                      
+Normal      20.0             24             66                      33                      
+Fire        11.0             12             83                      16                      
+Psychic     11.0             14             57                      42                      
+Ground      10.0             14             42                      57                      
+Flying      9.5              19             0                       100                     
+Fighting    7.5              8              87                      12                      
+Bug         7.5              12             25                      75                      
+Grass       7.5              14             7                       92                      
+Electric    7.5              9              66                      33                      
+Rock        5.5              11             0                       100                     
+Ice         2.5              5              0                       100                     
+Dragon      2.5              3              66                      33                      
+Ghost       1.5              3              0                       100                     
+Steel       1.0              2              0                       100   
 
 */
 
@@ -28,18 +33,14 @@ Dragon      2.5              3              2           1
 
 select name as "Types", sum(typecount) as "Algorithm Count", count(type_id) as "Natural Count", 
 -- Since we are doing a left join we need to coalesce the two
-coalesce(countnatural,0) as "Pures", count(type_id)-coalesce(countnatural,0) as "Mudbloods"
+(coalesce(countnatural,0))*100/count(type_id) as "Homogeneous Percentage", (count(type_id)-coalesce(countnatural,0))*100/count(type_id) as "Heterogeneous Percentage"
 
 from
 -- starts t2
 	-- Table with id, types, and count
 	(select pokemon_id, type_id, 
-			-- SQLITE CANNOT PERFORM DIVISION UNDER 1
-			-- Because 1/2=0 in SQlite,  we have to use a manual case statement in Sqlite
-		case 
-	when typecount=1 then 1
-	when typecount=2 then 0.5
-	end typecount from pokemon_types 
+	
+		1.0/typecount as typecount from pokemon_types 
 
 	natural join
 
@@ -69,4 +70,5 @@ where type_names.local_language_id=9
 
 group by type_id
 
+order by sum(typecount) desc
 ;

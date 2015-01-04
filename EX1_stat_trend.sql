@@ -1,22 +1,27 @@
-/* For each stat_id, We find the ratio percentage where the original 151 pokemons have the highest of a specific  stat per type. 
+/* For each stat, we find the percentage of pokemons in the original 151 who have the highest indicated stat relative to its type.
 
-For example the original 151 had the highest HP stat in ~36% of the 17 pokemon types. 
+For example, the original 151 pokemons had the highest HP stat in ~36% of the 17 pokemon types. 
 
-We do double count when two pokemons draw on the greatest of a particular stat. We return
+If there are two pokemon with the highest stat type, we double count the figure. This could occur when a certain pokemon have two different types, but the highest of a particular stat. 
 
-name        percent   
-----------  ----------
-HP          36        
-Defense     31        
-Attack      28        
-Special De  20        
-Special At  13        
-Speed       9         
+The baseline percent is the count of the original 151 pokemons divided by the total pokemon count. This is to indicate a baseline of what the percentage would be if stats were evenly distributed. 
 
-The overall trent seems to show that the original 151 were stronger, but the newer generations were quicker and have a higher emphasis on special abilities. 
+After running the analysis, we return the following table.
+
+stat        percent     baseline  
+----------  ----------  ----------
+HP          36          22        
+Defense     31          22        
+Attack      28          22        
+Special De  20          22        
+Special At  13          22        
+Speed       9           22        
+
+My analysis indicates that that pokemons have been growing quicker with a higher emphasis on special abilities. It seems that the original 151 pokemon had higher HP and defense. 
+
 */
 
-select stat_names.name, (og*100/(og+ko)) as percent from
+select stat_names.name as stat, (og*100/(og+ko)) as percent, 151*100/673 as baseline  from
 
 
 (select stat_id,

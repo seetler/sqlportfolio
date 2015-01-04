@@ -1,2 +1,6 @@
 We used SQLITE3 as our SQL engine.
+<<<<<<< HEAD
 The Database is pokedex.sqlite.
+=======
+The Database is pokedex.sqlite.
+>>>>>>> ca60f9ac903ddc745744e0da8fff5d445e1419bb
